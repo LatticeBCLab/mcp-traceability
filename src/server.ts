@@ -27,12 +27,8 @@ server.addTool({
 	name: "createBusiness",
 	description: "Create a business contract address",
 	execute: async () => {
-		const result = await createBusinessTool();
-		if (E.isLeft(result.receipt)) {
-			const receipt = result.receipt.left;
-			return JSON.stringify(receipt);
-		}
-		return result.receipt.right.toString();
+		const receipt = await createBusinessTool();
+		return JSON.stringify(receipt);
 	},
 });
 
@@ -52,10 +48,10 @@ server.addTool({
 });
 
 server.start({
-	//transportType: "stdio",
-	transportType: "sse",
+	transportType: "stdio",
+	/* transportType: "sse",
 	sse: {
 		endpoint: "/sse",
 		port: 8000,
-	},
+	}, */
 });

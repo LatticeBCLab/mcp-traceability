@@ -14,7 +14,7 @@ export const EventSchema = z.object({
 
 export const ReceiptSchema = z.object({
 	confirmTime: z.string().optional(),
-	succcess: z.boolean(),
+	success: z.boolean(),
 	receiptIndex: z.number(),
 	tBlockHash: z.string(),
 	contractAddress: z.string().optional(),
