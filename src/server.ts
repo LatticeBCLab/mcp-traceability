@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { E } from "@zlattice/lattice-js";
+import { log } from "@zlattice/lattice-js";
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import { protocolBuffersAgent } from "./agents/protocol-buffers-agent";
@@ -45,7 +46,7 @@ server.addTool({
 		const result = await protocolBuffersAgent.generate([
 			{ role: "user", content: args.message },
 		]);
-		console.log("server", result.text);
+		log.info("agent result", result.text);
 		return result.text;
 	},
 });

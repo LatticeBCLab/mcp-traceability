@@ -1,11 +1,27 @@
 import { createProtocolTool } from "@/tools";
 import { deepseek } from "@ai-sdk/deepseek";
 import { Agent } from "@mastra/core/agent";
+import { MCPClient } from "@mastra/mcp";
+
+const duckduckgo = new MCPClient({
+	servers: {
+		"ddg-search": {
+			command: "uvx",
+			args: ["duckduckgo-mcp-server"],
+		},
+	},
+});
 
 export const protocolBuffersAgent = new Agent({
 	name: "Protocol Buffers Agent",
 	instructions: `
       You are an assistant proficient in Google protocol buffers syntax, TypeScript, and JSON data structures.
+      
+      You can use DuckDuckGo for web search to help you learn the syntax of protobuf.
+
+      Protobuf Standard:
+      - https://protobuf.dev/programming-guides/proto3/
+      - snake_case is recommended for field names.
 
       Your main responsibility is to help users create standardized protocol messages. When responding:
       - Always start with the syntax declaration: "syntax = "proto3";"
@@ -39,7 +55,8 @@ export const protocolBuffersAgent = new Agent({
 
       Tools:
       - createProtocolTool: Create a protocol, the input is protocol message.
-
+      - ddg-search: Search the web.
+      
       Process:
       - First, define the protocol message,
       - Second, use createProtocolTool to create the protocol.
