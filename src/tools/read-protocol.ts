@@ -1,8 +1,11 @@
 import { chainClient } from "@/lib/chain-client";
 import { chainId, credentials } from "@/lib/chain-client";
 import { hexStringsToBufferWithTrimmedZeros } from "@/lib/utils";
+import { ReceiptSchema } from "@/types";
 import type { Result } from "@/types";
+import { createTool } from "@mastra/core/tools";
 import { Address, E, TraceabilityContract, log } from "@zlattice/lattice-js";
+import { z } from "zod";
 
 export const readProtocol = async (protocolUri: number) => {
 	const traceability = new TraceabilityContract();
@@ -45,3 +48,17 @@ export const readProtocol = async (protocolUri: number) => {
 		receipt,
 	};
 };
+
+export const readProtocolTool = createTool({
+	id: "read-protocol",
+	description: "Read protocol from the blockchain.",
+	inputSchema: z.object({
+		protocolUri: z.number(),
+	}),
+	outputSchema: z.object({
+		receipt: ReceiptSchema,
+	}),
+	execute: async ({ context }) => {
+		return await readProtocol(context.protocolUri);
+	},
+});

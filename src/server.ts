@@ -5,6 +5,7 @@ import { z } from "zod";
 import { protocolBuffersAgent } from "./agents/protocol-buffers-agent";
 import { createBusinessTool } from "./tools/create-business";
 import { readProtocol } from "./tools/read-protocol";
+import { writeTraceability } from "./tools/write-traceability";
 
 const server = new FastMCP({
 	name: "My Server",
@@ -12,22 +13,10 @@ const server = new FastMCP({
 });
 
 server.addTool({
-	name: "add",
-	description: "Add two numbers",
-	parameters: z.object({
-		a: z.number(),
-		b: z.number(),
-	}),
-	execute: async (args) => {
-		return String(args.a + args.b);
-	},
-});
-
-server.addTool({
 	name: "createBusiness",
 	description: "Create a business contract address",
 	execute: async () => {
-		const receipt = await createBusinessTool();
+		const { receipt } = await createBusinessTool();
 		return JSON.stringify(receipt);
 	},
 });
@@ -54,8 +43,28 @@ server.addTool({
 		protocolUri: z.number().describe("Protocol URI"),
 	}),
 	execute: async (args) => {
-		const result = await readProtocol(args.protocolUri);
-		return JSON.stringify(result);
+		const { receipt } = await readProtocol(args.protocolUri);
+		return JSON.stringify(receipt);
+	},
+});
+
+server.addTool({
+	name: "writeTraceability",
+	description: "Write a traceability",
+	parameters: z.object({
+		protocolUri: z.number().describe("Protocol URI"),
+		dataId: z.string().describe("Data ID"),
+		data: z.string().describe("Data"),
+		businessContractAddress: z.string().describe("Business Contract Address"),
+	}),
+	execute: async (args) => {
+		const { receipt } = await writeTraceability(
+			args.dataId,
+			args.data,
+			args.protocolUri,
+			args.businessContractAddress,
+		);
+		return JSON.stringify(receipt);
 	},
 });
 

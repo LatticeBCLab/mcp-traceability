@@ -4,6 +4,7 @@ import {
 	Curves,
 	LatticeClient,
 	NodeConnectionConfig,
+	TraceabilityContract,
 } from "@zlattice/lattice-js";
 
 export const chainId = Number(process.env.CHAIN_ID) || 1;
@@ -22,3 +23,5 @@ export const credentials = Credentials.fromPrivateKey(
 );
 
 export const chainClient = new LatticeClient(chainConfig, nodeConnectionConfig);
+
+export const traceabilityContract = new TraceabilityContract();
