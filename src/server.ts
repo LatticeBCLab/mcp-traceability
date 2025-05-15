@@ -3,6 +3,7 @@ import { log } from "@zlattice/lattice-js";
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import { protocolBuffersAgent } from "./agents/protocol-buffers-agent";
+import { traceabilityAgent } from "./agents/traceability-agent";
 import { createBusinessTool } from "./tools/create-business";
 import { readProtocol } from "./tools/read-protocol";
 import { writeTraceability } from "./tools/write-traceability";
@@ -67,6 +68,26 @@ server.addTool({
 		return JSON.stringify(receipt);
 	},
 });
+
+/* server.addTool({
+	name: "writeTraceability",
+	description: "Write a traceability",
+	parameters: z.object({
+		message: z.string().describe("User message"),
+		protocolUri: z.number().describe("Protocol URI"),
+		businessContractAddress: z.string().describe("Business Contract Address"),
+	}),
+	execute: async (args) => {
+		const agent = traceabilityAgent;
+		const result = await agent.generate([
+			{
+				role: "user",
+				content: `message: ${args.message}, protocolUri: ${args.protocolUri}, businessContractAddress: ${args.businessContractAddress}`,
+			},
+		]);
+		return result.text;
+	},
+}); */
 
 server.start({
 	transportType: "stdio",

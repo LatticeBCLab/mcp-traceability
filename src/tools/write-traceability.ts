@@ -5,7 +5,8 @@ import {
 	traceabilityContract,
 } from "@/lib/chain-client";
 import { createTool } from "@mastra/core/tools";
-import { E, encodeBytes32Array } from "@zlattice/lattice-js";
+import { encodeBytes32Array } from "@zlattice/lattice-js";
+import * as E from "fp-ts/Either";
 import { z } from "zod";
 
 export const writeTraceability = async (
@@ -58,5 +59,23 @@ export const writeTraceabilityTool = createTool({
 			context.protocolUri,
 			context.businessContractAddress,
 		);
+	},
+});
+
+export const generateDataId = () => {
+	const chars =
+		"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	let id = "";
+	for (let i = 0; i < 66; i++) {
+		id += chars.charAt(Math.floor(Math.random() * chars.length));
+	}
+	return `0x${id}`;
+};
+
+export const generateDataIdTool = createTool({
+	id: "generate-data-id",
+	description: "Generate a data id.",
+	execute: async () => {
+		return generateDataId();
 	},
 });

@@ -3,11 +3,18 @@ import { deepseek } from "@ai-sdk/deepseek";
 import { Agent } from "@mastra/core/agent";
 import { MCPClient } from "@mastra/mcp";
 
-const duckduckgo = new MCPClient({
+const mcp = new MCPClient({
 	servers: {
-		"ddg-search": {
-			command: "uvx",
-			args: ["duckduckgo-mcp-server"],
+		"duckduckgo-mcp-server": {
+			command: "npx",
+			args: [
+				"-y",
+				"@smithery/cli@latest",
+				"run",
+				"@nickclyde/duckduckgo-mcp-server",
+				"--key",
+				"1a01880c-71a2-4751-ad47-04d1312d3fc8",
+			],
 		},
 	},
 });

@@ -1,7 +1,8 @@
 import { chainClient, chainId, credentials } from "@/lib/chain-client";
 import { ReceiptSchema } from "@/types";
 import { createTool } from "@mastra/core/tools";
-import { E, TraceabilityContract, log } from "@zlattice/lattice-js";
+import { TraceabilityContract, log } from "@zlattice/lattice-js";
+import * as E from "fp-ts/Either";
 import { z } from "zod";
 
 export const createProtocol = async (protoContent: string) => {

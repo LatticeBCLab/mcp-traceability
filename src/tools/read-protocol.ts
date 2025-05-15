@@ -4,7 +4,8 @@ import { hexStringsToBufferWithTrimmedZeros } from "@/lib/utils";
 import { ReceiptSchema } from "@/types";
 import type { Result } from "@/types";
 import { createTool } from "@mastra/core/tools";
-import { Address, E, TraceabilityContract, log } from "@zlattice/lattice-js";
+import { Address, TraceabilityContract } from "@zlattice/lattice-js";
+import * as E from "fp-ts/Either";
 import { z } from "zod";
 
 export const readProtocol = async (protocolUri: number) => {

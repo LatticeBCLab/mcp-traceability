@@ -1,7 +1,8 @@
 import { chainClient, chainId, credentials } from "@/lib/chain-client";
-import { TraceabilityContract, isHexString } from "@zlattice/lattice-js";
-import { E, log } from "@zlattice/lattice-js";
+import { TraceabilityContract } from "@zlattice/lattice-js";
+import { log } from "@zlattice/lattice-js";
 import { Address } from "@zlattice/lattice-js";
+import * as E from "fp-ts/Either";
 
 export const createBusinessTool = async () => {
 	const traceability = new TraceabilityContract();
