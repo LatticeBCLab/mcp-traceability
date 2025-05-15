@@ -14,7 +14,7 @@ export const createProtocol = async (protoContent: string) => {
 	const result = await chainClient.callContractWaitReceipt(
 		credentials,
 		chainId,
-		"zltc_QLbz7JHiBTspUvTPzLHy5biDS9mu53mmv",
+		traceability.getBuiltinContract().getAddress(),
 		code,
 	);
 

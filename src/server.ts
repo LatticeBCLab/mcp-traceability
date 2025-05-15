@@ -1,10 +1,10 @@
 import "dotenv/config";
-import { E } from "@zlattice/lattice-js";
 import { log } from "@zlattice/lattice-js";
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import { protocolBuffersAgent } from "./agents/protocol-buffers-agent";
 import { createBusinessTool } from "./tools/create-business";
+import { readProtocol } from "./tools/read-protocol";
 
 const server = new FastMCP({
 	name: "My Server",
@@ -44,6 +44,18 @@ server.addTool({
 		]);
 		log.info("agent result", result.text);
 		return result.text;
+	},
+});
+
+server.addTool({
+	name: "readProtocol",
+	description: "Read a protocol",
+	parameters: z.object({
+		protocolUri: z.number().describe("Protocol URI"),
+	}),
+	execute: async (args) => {
+		const result = await readProtocol(args.protocolUri);
+		return JSON.stringify(result);
 	},
 });
 
