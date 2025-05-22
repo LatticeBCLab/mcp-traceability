@@ -7,32 +7,32 @@ import { Buffer } from "node:buffer";
  * @returns A buffer containing the concatenated hex strings.
  */
 export function hexStringsToBufferWithTrimmedZeros(
-	hexStrings: string[],
+  hexStrings: string[],
 ): Buffer {
-	if (!hexStrings || hexStrings.length === 0) {
-		return Buffer.alloc(0);
-	}
+  if (!hexStrings || hexStrings.length === 0) {
+    return Buffer.alloc(0);
+  }
 
-	const buffers: Buffer[] = hexStrings.map((hexString) => {
-		const cleanHexString = hexString.startsWith("0x")
-			? hexString.slice(2)
-			: hexString;
-		// Assuming each string is a valid hex representation of 32 bytes,
-		// so cleanHexString.length should be 64.
-		// No explicit validation here as per problem description focusing on the conversion and trimming.
-		return Buffer.from(cleanHexString, "hex");
-	});
+  const buffers: Buffer[] = hexStrings.map((hexString) => {
+    const cleanHexString = hexString.startsWith("0x")
+      ? hexString.slice(2)
+      : hexString;
+    // Assuming each string is a valid hex representation of 32 bytes,
+    // so cleanHexString.length should be 64.
+    // No explicit validation here as per problem description focusing on the conversion and trimming.
+    return Buffer.from(cleanHexString, "hex");
+  });
 
-	const combinedBuffer = Buffer.concat(buffers);
+  const combinedBuffer = Buffer.concat(buffers);
 
-	if (combinedBuffer.length === 0) {
-		return combinedBuffer;
-	}
+  if (combinedBuffer.length === 0) {
+    return combinedBuffer;
+  }
 
-	let end = combinedBuffer.length;
-	while (end > 0 && combinedBuffer[end - 1] === 0) {
-		end--;
-	}
+  let end = combinedBuffer.length;
+  while (end > 0 && combinedBuffer[end - 1] === 0) {
+    end--;
+  }
 
-	return combinedBuffer.subarray(0, end);
+  return combinedBuffer.subarray(0, end);
 }

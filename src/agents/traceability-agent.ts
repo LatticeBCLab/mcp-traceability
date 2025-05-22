@@ -1,14 +1,14 @@
 import {
-	generateDataIdTool,
-	readProtocolTool,
-	writeTraceabilityTool,
+  generateDataIdTool,
+  readProtocolTool,
+  writeTraceabilityTool,
 } from "@/tools";
 import { deepseek } from "@ai-sdk/deepseek";
 import { Agent } from "@mastra/core/agent";
 
 export const traceabilityAgent = new Agent({
-	name: "Write Traceability Agent",
-	instructions: `
+  name: "Write Traceability Agent",
+  instructions: `
     You are an assistant that helps users manage traceability data.
 
     Work flow:
@@ -20,6 +20,6 @@ export const traceabilityAgent = new Agent({
     6. 如果用户没有提供dataId，则帮助用户生成一个dataId。
     7. 如果用户没有提供data，则帮助用户生成一个data。
     `,
-	model: deepseek("deepseek-chat"),
-	tools: { readProtocolTool, writeTraceabilityTool, generateDataIdTool },
+  model: deepseek("deepseek-chat"),
+  tools: { readProtocolTool, writeTraceabilityTool, generateDataIdTool },
 });

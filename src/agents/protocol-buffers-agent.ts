@@ -3,7 +3,7 @@ import { deepseek } from "@ai-sdk/deepseek";
 import { Agent } from "@mastra/core/agent";
 import { MCPClient } from "@mastra/mcp";
 
-const mcp = new MCPClient({
+/* const mcp = new MCPClient({
 	servers: {
 		"duckduckgo-mcp-server": {
 			command: "npx",
@@ -17,11 +17,11 @@ const mcp = new MCPClient({
 			],
 		},
 	},
-});
+}); */
 
 export const protocolBuffersAgent = new Agent({
-	name: "Protocol Buffers Agent",
-	instructions: `
+  name: "Protocol Buffers Agent",
+  instructions: `
       You are an assistant proficient in Google protocol buffers syntax, TypeScript, and JSON data structures.
       
       Attentation:
@@ -71,7 +71,7 @@ export const protocolBuffersAgent = new Agent({
 
       Finally, Return the JSON format of the proto message written in the first step and the output result (Receipt) of the createProtocolTool in the second step together.
       `,
-	model: deepseek("deepseek-chat"),
-	//tools: { createProtocolTool, ...(await mcp.getTools()) },
-	tools: { createProtocolTool },
+  model: deepseek("deepseek-chat"),
+  //tools: { createProtocolTool, ...(await mcp.getTools()) },
+  tools: { createProtocolTool },
 });
