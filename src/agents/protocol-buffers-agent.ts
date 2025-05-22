@@ -72,5 +72,6 @@ export const protocolBuffersAgent = new Agent({
       Finally, Return the JSON format of the proto message written in the first step and the output result (Receipt) of the createProtocolTool in the second step together.
       `,
 	model: deepseek("deepseek-chat"),
+	//tools: { createProtocolTool, ...(await mcp.getTools()) },
 	tools: { createProtocolTool },
 });

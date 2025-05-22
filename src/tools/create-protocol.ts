@@ -2,7 +2,6 @@ import { chainClient, chainId, credentials } from "@/lib/chain-client";
 import { ReceiptSchema } from "@/types";
 import { createTool } from "@mastra/core/tools";
 import { TraceabilityContract, log } from "@zlattice/lattice-js";
-import * as E from "fp-ts/Either";
 import { z } from "zod";
 
 export const createProtocol = async (protoContent: string) => {
@@ -12,31 +11,30 @@ export const createProtocol = async (protoContent: string) => {
 		protocolSuite,
 		Buffer.from(protoContent, "utf-8"),
 	);
-	const result = await chainClient.callContractWaitReceipt(
-		credentials,
-		chainId,
-		traceability.getBuiltinContract().getAddress(),
-		code,
-	);
-
-	if (E.isRight(result)) {
-		throw new Error("Failed to create protocol");
-	}
-
-	const receipt = result.left;
-	if (receipt.success) {
-		const iface = traceability.getIface().getInterface();
-		const result = iface.decodeFunctionResult(
-			"addProtocol",
-			receipt.contractRet ?? "",
+	return await chainClient
+		.callContractWaitReceipt(
+			credentials,
+			chainId,
+			traceability.getBuiltinContract().getAddress(),
+			code,
+		)
+		.match(
+			(receipt) => {
+				if (receipt.success) {
+					const iface = traceability.getIface().getInterface();
+					const result = iface.decodeFunctionResult(
+						"addProtocol",
+						receipt.contractRet ?? "",
+					);
+					log.info("Decoded call contract result, get protocol id: %s", result);
+					receipt.contractRet = result.toString();
+				}
+				return receipt;
+			},
+			(error) => {
+				throw error instanceof Error ? error : new Error(String(error));
+			},
 		);
-		log.info("Decoded call contract result, get protocol id: %s", result);
-		receipt.contractRet = result.toString();
-	}
-
-	return {
-		receipt,
-	};
 };
 
 export const createProtocolTool = createTool({
@@ -49,6 +47,9 @@ export const createProtocolTool = createTool({
 		receipt: ReceiptSchema,
 	}),
 	execute: async ({ context }) => {
-		return await createProtocol(context.protoContent);
+		const receipt = await createProtocol(context.protoContent);
+		return {
+			receipt,
+		};
 	},
 });

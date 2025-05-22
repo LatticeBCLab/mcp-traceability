@@ -3,13 +3,12 @@ import { log } from "@zlattice/lattice-js";
 import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import { protocolBuffersAgent } from "./agents/protocol-buffers-agent";
-import { traceabilityAgent } from "./agents/traceability-agent";
 import { createBusinessTool } from "./tools/create-business";
 import { readProtocol } from "./tools/read-protocol";
 import { writeTraceability } from "./tools/write-traceability";
 
 const server = new FastMCP({
-	name: "My Server",
+	name: "Traceability MCP Server",
 	version: "1.0.0",
 });
 
@@ -17,7 +16,7 @@ server.addTool({
 	name: "createBusiness",
 	description: "Create a business contract address",
 	execute: async () => {
-		const { receipt } = await createBusinessTool();
+		const receipt = await createBusinessTool();
 		return JSON.stringify(receipt);
 	},
 });
@@ -44,7 +43,7 @@ server.addTool({
 		protocolUri: z.number().describe("Protocol URI"),
 	}),
 	execute: async (args) => {
-		const { receipt } = await readProtocol(args.protocolUri);
+		const receipt = await readProtocol(args.protocolUri);
 		return JSON.stringify(receipt);
 	},
 });
@@ -59,7 +58,7 @@ server.addTool({
 		businessContractAddress: z.string().describe("Business Contract Address"),
 	}),
 	execute: async (args) => {
-		const { receipt } = await writeTraceability(
+		const receipt = await writeTraceability(
 			args.dataId,
 			args.data,
 			args.protocolUri,

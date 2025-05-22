@@ -4,9 +4,9 @@ import {
 	credentials,
 	traceabilityContract,
 } from "@/lib/chain-client";
+import { ReceiptSchema } from "@/types";
 import { createTool } from "@mastra/core/tools";
 import { encodeBytes32Array } from "@zlattice/lattice-js";
-import * as E from "fp-ts/Either";
 import { z } from "zod";
 
 export const writeTraceability = async (
@@ -21,22 +21,20 @@ export const writeTraceability = async (
 		data: encodeBytes32Array(Buffer.from(data, "utf-8")),
 		businessContractAddress,
 	});
-	const result = await chainClient.callContractWaitReceipt(
-		credentials,
-		chainId,
-		traceabilityContract.getBuiltinContract().getAddress(),
-		code,
-	);
 
-	if (E.isRight(result)) {
-		throw new Error("Failed to write traceability");
-	}
-
-	const receipt = result.left;
-
-	return {
-		receipt,
-	};
+	return await chainClient
+		.callContractWaitReceipt(
+			credentials,
+			chainId,
+			traceabilityContract.getBuiltinContract().getAddress(),
+			code,
+		)
+		.match(
+			(receipt) => receipt,
+			(error) => {
+				throw error instanceof Error ? error : new Error(String(error));
+			},
+		);
 };
 
 export const writeTraceabilityTool = createTool({
@@ -52,13 +50,19 @@ export const writeTraceabilityTool = createTool({
 			.string()
 			.describe("The business contract address of the traceability data."),
 	}),
+	outputSchema: z.object({
+		receipt: ReceiptSchema,
+	}),
 	execute: async ({ context }) => {
-		return await writeTraceability(
+		const receipt = await writeTraceability(
 			context.dataId,
 			context.data,
 			context.protocolUri,
 			context.businessContractAddress,
 		);
+		return {
+			receipt,
+		};
 	},
 });
 

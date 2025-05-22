@@ -2,29 +2,30 @@ import { chainClient, chainId, credentials } from "@/lib/chain-client";
 import { TraceabilityContract } from "@zlattice/lattice-js";
 import { log } from "@zlattice/lattice-js";
 import { Address } from "@zlattice/lattice-js";
-import * as E from "fp-ts/Either";
 
 export const createBusinessTool = async () => {
 	const traceability = new TraceabilityContract();
-	const result = await chainClient.callContractWaitReceipt(
-		credentials,
-		chainId,
-		TraceabilityContract.ADDRESS_FOR_CREATE_BUSINESS,
-		traceability.createBusiness(),
-	);
-
-	if (E.isRight(result)) {
-		throw new Error("Failed to create business");
-	}
-
-	const receipt = result.left;
-	if (receipt.success) {
-		const address = new Address(receipt.contractRet ?? "").toZLTC();
-		log.info("Decoded call contract result, get business address: %s", address);
-		receipt.contractRet = address;
-	}
-
-	return {
-		receipt,
-	};
+	return await chainClient
+		.callContractWaitReceipt(
+			credentials,
+			chainId,
+			TraceabilityContract.ADDRESS_FOR_CREATE_BUSINESS,
+			traceability.createBusiness(),
+		)
+		.match(
+			(receipt) => {
+				if (receipt.success) {
+					const address = new Address(receipt.contractRet ?? "").toZLTC();
+					log.info(
+						"Decoded call contract result, get business address: %s",
+						address,
+					);
+					receipt.contractRet = address;
+				}
+				return receipt;
+			},
+			(error) => {
+				throw error instanceof Error ? error : new Error(String(error));
+			},
+		);
 };
