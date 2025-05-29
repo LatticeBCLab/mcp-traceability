@@ -4,7 +4,7 @@ import { FastMCP } from "fastmcp";
 import { z } from "zod";
 import { protocolBuffersAgent } from "./agents/protocol-buffers-agent";
 import { webSearchAgent } from "./agents/web-search-agent";
-import { createBusinessTool } from "./tools/create-business";
+import { createBusiness } from "./tools/create-business";
 import { readProtocol } from "./tools/read-protocol";
 import { writeTraceability } from "./tools/write-traceability";
 
@@ -17,7 +17,7 @@ server.addTool({
   name: "createBusiness",
   description: "Create a business contract address",
   execute: async () => {
-    const receipt = await createBusinessTool();
+    const receipt = await createBusiness();
     return JSON.stringify(receipt);
   },
 });
@@ -29,9 +29,13 @@ server.addTool({
     query: z.string().describe("Search query"),
   }),
   execute: async (args) => {
-    const result = await webSearchAgent.generate([
-      { role: "user", content: args.query },
-    ]);
+    const result = await webSearchAgent.generate(
+      [{ role: "user", content: args.query }],
+      {
+        resourceId: process.env.ACCOUNT_ADDRESS || "default",
+        threadId: "web-search-thread",
+      },
+    );
     return result.text;
   },
 });
@@ -43,9 +47,13 @@ server.addTool({
     message: z.string().describe("User message"),
   }),
   execute: async (args) => {
-    const result = await protocolBuffersAgent.generate([
-      { role: "user", content: args.message },
-    ]);
+    const result = await protocolBuffersAgent.generate(
+      [{ role: "user", content: args.message }],
+      {
+        resourceId: process.env.ACCOUNT_ADDRESS || "default",
+        threadId: `${process.env.ACCOUNT_ADDRESS}-${new Date().toISOString().split("T")[0]}-protocol-buffers-thread`,
+      },
+    );
     log.info("agent result", result.text);
     return result.text;
   },

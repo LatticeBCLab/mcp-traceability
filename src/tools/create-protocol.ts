@@ -43,13 +43,8 @@ export const createProtocolTool = createTool({
   inputSchema: z.object({
     protoContent: z.string(),
   }),
-  outputSchema: z.object({
-    receipt: ReceiptSchema,
-  }),
+  outputSchema: ReceiptSchema,
   execute: async ({ context }) => {
-    const receipt = await createProtocol(context.protoContent);
-    return {
-      receipt,
-    };
+    return await createProtocol(context.protoContent);
   },
 });

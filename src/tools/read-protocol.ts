@@ -53,13 +53,8 @@ export const readProtocolTool = createTool({
   inputSchema: z.object({
     protocolUri: z.number(),
   }),
-  outputSchema: z.object({
-    receipt: ReceiptSchema,
-  }),
+  outputSchema: ReceiptSchema,
   execute: async ({ context }) => {
-    const receipt = await readProtocol(context.protocolUri);
-    return {
-      receipt,
-    };
+    return await readProtocol(context.protocolUri);
   },
 });

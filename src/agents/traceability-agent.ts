@@ -1,25 +1,54 @@
 import {
+  createBusinessTool,
+  createProtocolTool,
   generateDataIdTool,
   readProtocolTool,
   writeTraceabilityTool,
 } from "@/tools";
 import { deepseek } from "@ai-sdk/deepseek";
 import { Agent } from "@mastra/core/agent";
+import { LibSQLStore } from "@mastra/libsql";
+import { Memory } from "@mastra/memory";
+
+const memory = new Memory({
+  storage: new LibSQLStore({
+    url: "file:../../traceability-memory.db",
+  }),
+  options: {
+    lastMessages: 10,
+    workingMemory: {
+      enabled: true,
+    },
+  },
+});
+
+const instructions = `You are a helpful assistant that can help users with their data and tools, powered by deepseek.
+
+  Your main responsibilities are:
+  1. Read the protocol from the database.
+  2. Write the traceability data to the database.
+  3. Generate the data ID.
+
+  Available tools:
+  - readProtocolTool: Read the protocol from the database.
+  - writeTraceabilityTool: Write the traceability data to the database.
+  - generateDataIdTool: Generate the data ID.
+
+  You are also given a user's information.
+  You are also given a workflow to help the user with their data.
+  `;
+
 
 export const traceabilityAgent = new Agent({
-  name: "Write Traceability Agent",
-  instructions: `
-    You are an assistant that helps users manage traceability data.
-
-    Work flow:
-    1. 从用户信息中获取protocolUri, businessContractAddress等参数，如果获取不到，则提示用户提供。
-    2. readProtocolTool: read protocol from the blockchain. And get the protobuf from receipt.contractRet.
-    3. 通过protobuf中定义的message结构来检查用户给的data数据结构是否和protobuf中定义的message结构一致。
-    4. 如果一致，则使用writeTraceabilityTool来写入traceability数据到区块链。
-    5. 如果数据结构不一致，则提示用户修改数据结构。
-    6. 如果用户没有提供dataId，则帮助用户生成一个dataId。
-    7. 如果用户没有提供data，则帮助用户生成一个data。
-    `,
+  name: "Traceability Agent",
+  instructions,
   model: deepseek("deepseek-chat"),
-  tools: { readProtocolTool, writeTraceabilityTool, generateDataIdTool },
+  tools: {
+    createProtocolTool,
+    createBusinessTool,
+    readProtocolTool,
+    writeTraceabilityTool,
+    generateDataIdTool,
+  },
+  memory,
 });

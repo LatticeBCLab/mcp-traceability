@@ -1,9 +1,11 @@
 import { chainClient, chainId, credentials } from "@/lib/chain-client";
+import { ReceiptSchema } from "@/types";
+import { createTool } from "@mastra/core/tools";
 import { TraceabilityContract } from "@zlattice/lattice-js";
 import { log } from "@zlattice/lattice-js";
 import { Address } from "@zlattice/lattice-js";
 
-export const createBusinessTool = async () => {
+export const createBusiness = async () => {
   const traceability = new TraceabilityContract();
   return await chainClient
     .callContractWaitReceipt(
@@ -29,3 +31,12 @@ export const createBusinessTool = async () => {
       },
     );
 };
+
+export const createBusinessTool = createTool({
+  id: "create-business",
+  description: "Create a business contract address",
+  outputSchema: ReceiptSchema,
+  execute: async () => {
+    return await createBusiness();
+  },
+});

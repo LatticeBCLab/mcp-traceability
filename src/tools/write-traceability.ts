@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import {
 	chainClient,
 	chainId,
@@ -50,34 +51,29 @@ export const writeTraceabilityTool = createTool({
       .string()
       .describe("The business contract address of the traceability data."),
   }),
-  outputSchema: z.object({
-    receipt: ReceiptSchema,
-  }),
+  outputSchema: ReceiptSchema,
   execute: async ({ context }) => {
-    const receipt = await writeTraceability(
+    return await writeTraceability(
       context.dataId,
       context.data,
       context.protocolUri,
       context.businessContractAddress,
     );
-    return {
-      receipt,
-    };
   },
 });
 
 export const generateDataId = () => {
-  const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let id = "";
-  for (let i = 0; i < 66; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return `0x${id}`;
+  const bs = randomBytes(64);
+  return `0x${bs.toString("hex")}`;
 };
 
 export const generateDataIdTool = createTool({
   id: "generate-data-id",
-  description: "Generate a data id.",
+  description: "Generate a data id for the traceability data.",
+  outputSchema: z
+    .string()
+    .regex(/^0x[0-9a-fA-F]{64}$/)
+    .describe("The data id of the traceability data."),
   execute: async () => {
     return generateDataId();
   },
